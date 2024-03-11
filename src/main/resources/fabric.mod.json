@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "demonyms",
+  "version": "${version}",
+  "name": "Demonyms",
+  "description": "Tolkien like races in Minecraft! Server-sided!",
+  "authors": [
+    "Mayaqq"
+  ],
+  "contact": {
+    "repo": "https://github.com/mayaqq/Demonyms"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/demonyms/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.mayaqq.demonyms.client.DemonymsClient"
+    ],
+    "main": [
+      "dev.mayaqq.demonyms.Demonyms"
+    ]
+  },
+  "mixins": [
+    "demonyms.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
