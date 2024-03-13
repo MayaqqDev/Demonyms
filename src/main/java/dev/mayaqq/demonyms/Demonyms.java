@@ -1,5 +1,6 @@
 package dev.mayaqq.demonyms;
 
+import dev.mayaqq.demonyms.registry.DemonymEvents;
 import dev.mayaqq.demonyms.resources.DemonymProcessor;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
@@ -14,6 +15,7 @@ public class Demonyms implements ModInitializer {
     @Override
     public void onInitialize() {
         DemonymProcessor.register();
+        DemonymEvents.register();
     }
 
     public static Identifier id(String path) {

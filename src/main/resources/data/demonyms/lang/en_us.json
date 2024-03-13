@@ -1,0 +1,10 @@
+{
+  "gui.demonyms.choose_demonym.title": "Choose a demonym",
+  "gui.demonyms.choose_demonym.description": "Click this Demonym to choose it",
+  "gui.demonyms.choose_demonym.confirm_title": "Are you sure?",
+  "gui.demonyms.choose_demonym.confirm": "Confirm",
+  "gui.demonyms.choose_demonym.cancel": "Cancel",
+
+  "demonym.demonyms.default.name": "Human",
+  "demonym.demonyms.default.description": "Default Human being, nothing special"
+}

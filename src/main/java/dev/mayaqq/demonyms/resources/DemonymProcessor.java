@@ -28,8 +28,8 @@ public class DemonymProcessor {
             public void reload(ResourceManager manager) {
                 manager.findResources("demonyms", path -> path.toString().endsWith(".json")).forEach((id, resource) -> {
                     try {
-                        JsonObject obj = GSON.fromJson(resource.getReader(), JsonObject.class);
-                        DEMONYMS.put(id, Demonym.fromJson(obj));
+                        JsonObject json = GSON.fromJson(resource.getReader(), JsonObject.class);
+                        DEMONYMS.put(new Identifier(json.get("id").getAsString()), Demonym.fromJson(json));
                     } catch (Exception e) {
                         Demonyms.LOGGER.error("Failed to load block squish amount from " + id.toString() + " as " + e.getMessage());
                     }
