@@ -1,7 +1,8 @@
 package dev.mayaqq.demonyms;
 
-import dev.mayaqq.demonyms.registry.DemonymEvents;
-import dev.mayaqq.demonyms.resources.DemonymProcessor;
+import dev.mayaqq.demonyms.registry.DemonymsEvents;
+import dev.mayaqq.demonyms.registry.DemonymsCommands;
+import dev.mayaqq.demonyms.resources.DemonymsProcessor;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -14,8 +15,9 @@ public class Demonyms implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        DemonymProcessor.register();
-        DemonymEvents.register();
+        DemonymsProcessor.register();
+        DemonymsEvents.register();
+        DemonymsCommands.register();
     }
 
     public static Identifier id(String path) {

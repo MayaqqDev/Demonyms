@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-public class DemonymProcessor {
+public class DemonymsProcessor {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static HashMap<Identifier, Demonym> DEMONYMS = new HashMap<>();
@@ -31,7 +31,7 @@ public class DemonymProcessor {
                         JsonObject json = GSON.fromJson(resource.getReader(), JsonObject.class);
                         DEMONYMS.put(new Identifier(json.get("id").getAsString()), Demonym.fromJson(json));
                     } catch (Exception e) {
-                        Demonyms.LOGGER.error("Failed to load block squish amount from " + id.toString() + " as " + e.getMessage());
+                        Demonyms.LOGGER.error("Failed to load demonym from " + id.toString() + " as " + e.getMessage());
                     }
                 });
             }

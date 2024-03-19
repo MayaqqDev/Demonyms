@@ -1,14 +1,11 @@
 package dev.mayaqq.demonyms.registry.screens;
 
-import com.google.common.collect.Maps;
 import dev.mayaqq.demonyms.resources.Demonym;
-import dev.mayaqq.demonyms.resources.DemonymProcessor;
+import dev.mayaqq.demonyms.resources.DemonymsProcessor;
 import dev.mayaqq.demonyms.storage.DemonymsState;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.entity.attribute.*;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
@@ -27,7 +24,7 @@ public class ChooseDemonymScreen {
     public static int create(ServerPlayerEntity player) {
         DemonymsState.PlayerState playerState = DemonymsState.getPlayerState(player);
         AtomicBoolean shouldClose = new AtomicBoolean(false);
-        SimpleGui gui = new SimpleGui(DemonymProcessor.DEMONYMS.size() <= 7 ? ScreenHandlerType.GENERIC_9X3 : ScreenHandlerType.GENERIC_9X6, player, false) {
+        SimpleGui gui = new SimpleGui(DemonymsProcessor.DEMONYMS.size() <= 7 ? ScreenHandlerType.GENERIC_9X3 : ScreenHandlerType.GENERIC_9X6, player, false) {
             @Override
             public void close(boolean screenHandlerIsClosed) {
                 if (shouldClose.get()) {
@@ -42,7 +39,7 @@ public class ChooseDemonymScreen {
 
         makeBackground(gui);
 
-        Set<Map.Entry<Identifier, Demonym>> demonyms = DemonymProcessor.DEMONYMS.entrySet();
+        Set<Map.Entry<Identifier, Demonym>> demonyms = DemonymsProcessor.DEMONYMS.entrySet();
 
         for (int i = 0; i < demonyms.size(); i++) {
             Map.Entry<Identifier, Demonym> entry = (Map.Entry<Identifier, Demonym>) demonyms.toArray()[i];
@@ -85,10 +82,9 @@ public class ChooseDemonymScreen {
                 .setItem(Items.GREEN_STAINED_GLASS_PANE)
                 .setName(Text.translatable("gui.demonyms.choose_demonym.confirm")).asStack(),
                 (index, type, action) -> {
-                    Demonym demonymToSet = DemonymProcessor.DEMONYMS.get(demonym);
-                    removeDemonym(player, demonymToSet);
+                    removeDemonym(player);
                     playerState.demonym = demonym;
-                    setDemonym(player, demonymToSet);
+                    setDemonym(player, DemonymsProcessor.DEMONYMS.get(demonym));
                     player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1, 1);
                     gui.close();
                 }
@@ -139,18 +135,9 @@ public class ChooseDemonymScreen {
         });
     }
 
-    public static void removeDemonym(ServerPlayerEntity player, Demonym demonym) {
-        AttributeContainer attributeContainer = player.getAttributes();
-
-        if (demonym.attributes() == null) return;
-
-        demonym.attributes().forEach((id, value) -> {
-            EntityAttribute attribute = Registries.ATTRIBUTE.get(id);
-            EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
-            if (entityAttributeInstance != null) {
-                AttributeModifierCreator modifierCreator = new EffectAttributeModifierCreator(DemonymModifierUUID, value, EntityAttributeModifier.Operation.ADDITION, demonym.id().toString());
-                entityAttributeInstance.removeModifier(modifierCreator.getUuid());
-            }
+    public static void removeDemonym(ServerPlayerEntity player) {
+        player.getAttributes().getTracked().forEach(attributeInstance -> {
+            attributeInstance.removeModifier(DemonymModifierUUID);
         });
     }
 

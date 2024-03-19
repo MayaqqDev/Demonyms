@@ -1,6 +1,6 @@
 package dev.mayaqq.demonyms.mixin;
 
-import dev.mayaqq.demonyms.resources.DemonymProcessor;
+import dev.mayaqq.demonyms.resources.DemonymsProcessor;
 import dev.mayaqq.demonyms.storage.DemonymsState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -26,9 +26,14 @@ public class PlayerInventoryMixin {
         ArrayList<ItemStack> handStacks = new ArrayList<>();
         handStacks.add(player.getStackInHand(Hand.MAIN_HAND));
         handStacks.add(player.getStackInHand(Hand.OFF_HAND));
-        if (DemonymProcessor.DEMONYMS.get(DemonymsState.getPlayerState(player).demonym).disallowedItems() == null) return;
+        try {
+            if (DemonymsProcessor.DEMONYMS.get(DemonymsState.getPlayerState(player).demonym).disallowedItems() == null) return;
+        } catch (NullPointerException e) {
+            return;
+        }
         for (ItemStack item : handStacks) {
-            if (item.isIn(DemonymProcessor.DEMONYMS.get(DemonymsState.getPlayerState(player).demonym).disallowedItems())) {
+            if (item.isIn(DemonymsProcessor.DEMONYMS.get(DemonymsState.getPlayerState(player).demonym).disallowedItems())) {
+                item.decrement(item.getCount());
                 player.dropStack(item);
             }
         }

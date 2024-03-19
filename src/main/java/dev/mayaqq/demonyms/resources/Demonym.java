@@ -15,10 +15,10 @@ public record Demonym(Identifier id, ItemConvertible item, @Nullable HashMap<Ide
     public static Demonym fromJson(JsonObject json) {
         TagKey<Item> disallowedItems = null;
         HashMap<Identifier, Float> attributes = null;
-        if (!json.get("disallowedItems").isJsonNull()) {
+        if (json.get("disallowedItems") != null) {
             disallowedItems = TagKey.of(Registries.ITEM.getKey(), new Identifier(json.get("disallowedItems").getAsString()));
         }
-        if (!json.get("attributes").isJsonNull()) {
+        if (json.get("attributes") != null) {
             attributes = json.get("attributes").getAsJsonObject().entrySet().stream().collect(HashMap::new, (map, entry) -> map.put(new Identifier(entry.getKey()), entry.getValue().getAsFloat()), HashMap::putAll);
         }
         return new Demonym(
