@@ -1,23 +1,29 @@
 package dev.mayaqq.demonyms.registry.screens;
 
+import com.google.common.collect.Maps;
 import dev.mayaqq.demonyms.resources.Demonym;
 import dev.mayaqq.demonyms.resources.DemonymProcessor;
 import dev.mayaqq.demonyms.storage.DemonymsState;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChooseDemonymScreen {
+
+    public static final UUID DemonymModifierUUID = UUID.fromString("a1732122-e22e-4edf-883c-09673eb55de8");
+
     public static int create(ServerPlayerEntity player) {
         DemonymsState.PlayerState playerState = DemonymsState.getPlayerState(player);
         AtomicBoolean shouldClose = new AtomicBoolean(false);
@@ -79,7 +85,10 @@ public class ChooseDemonymScreen {
                 .setItem(Items.GREEN_STAINED_GLASS_PANE)
                 .setName(Text.translatable("gui.demonyms.choose_demonym.confirm")).asStack(),
                 (index, type, action) -> {
+                    Demonym demonymToSet = DemonymProcessor.DEMONYMS.get(demonym);
+                    removeDemonym(player, demonymToSet);
                     playerState.demonym = demonym;
+                    setDemonym(player, demonymToSet);
                     player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1, 1);
                     gui.close();
                 }
@@ -111,6 +120,48 @@ public class ChooseDemonymScreen {
                     .setItem(Items.GRAY_STAINED_GLASS_PANE)
                     .setName(Text.of(" "))
             );
+        }
+    }
+
+    public static void setDemonym(ServerPlayerEntity player, Demonym demonym) {
+        AttributeContainer attributeContainer = player.getAttributes();
+
+        if (demonym.attributes() == null) return;
+
+        demonym.attributes().forEach((id, value) -> {
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(id);
+            EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+            if (entityAttributeInstance != null) {
+                AttributeModifierCreator modifierCreator = new EffectAttributeModifierCreator(DemonymModifierUUID, value, EntityAttributeModifier.Operation.ADDITION, demonym.id().toString());
+                entityAttributeInstance.removeModifier(modifierCreator.getUuid());
+                entityAttributeInstance.addPersistentModifier(modifierCreator.createAttributeModifier(0));
+            }
+        });
+    }
+
+    public static void removeDemonym(ServerPlayerEntity player, Demonym demonym) {
+        AttributeContainer attributeContainer = player.getAttributes();
+
+        if (demonym.attributes() == null) return;
+
+        demonym.attributes().forEach((id, value) -> {
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(id);
+            EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(attribute);
+            if (entityAttributeInstance != null) {
+                AttributeModifierCreator modifierCreator = new EffectAttributeModifierCreator(DemonymModifierUUID, value, EntityAttributeModifier.Operation.ADDITION, demonym.id().toString());
+                entityAttributeInstance.removeModifier(modifierCreator.getUuid());
+            }
+        });
+    }
+
+    record EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation, String name) implements AttributeModifierCreator {
+        public UUID getUuid() {
+            return this.uuid;
+        }
+
+        @Override
+        public EntityAttributeModifier createAttributeModifier(int amplifier) {
+            return new EntityAttributeModifier(this.uuid,  this.name, this.baseValue, this.operation);
         }
     }
 }
