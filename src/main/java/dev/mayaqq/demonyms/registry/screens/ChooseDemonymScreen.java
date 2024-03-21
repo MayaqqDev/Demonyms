@@ -1,5 +1,6 @@
 package dev.mayaqq.demonyms.registry.screens;
 
+import dev.mayaqq.demonyms.Demonyms;
 import dev.mayaqq.demonyms.resources.Demonym;
 import dev.mayaqq.demonyms.resources.DemonymsProcessor;
 import dev.mayaqq.demonyms.storage.DemonymsState;
@@ -136,8 +137,13 @@ public class ChooseDemonymScreen {
     }
 
     public static void removeDemonym(ServerPlayerEntity player) {
-        player.getAttributes().getTracked().forEach(attributeInstance -> {
-            attributeInstance.removeModifier(DemonymModifierUUID);
+        Demonym demonym = Demonyms.getPlayerDemonym(player);
+        demonym.attributes().keySet().forEach(id -> {
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(id);
+            if (attribute == null) {
+                return;
+            }
+            player.getAttributes().getCustomInstance(attribute).removeModifier(DemonymModifierUUID);
         });
     }
 
