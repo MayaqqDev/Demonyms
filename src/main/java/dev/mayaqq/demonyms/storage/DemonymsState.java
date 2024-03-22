@@ -75,6 +75,6 @@ public class DemonymsState extends PersistentState {
     }
     public static class PlayerState {
         public boolean firstJoin = true;
-        public Identifier demonym = new Identifier("demonyms:default");
+        public Identifier demonym = Demonyms.id("default");
     }
 }
