@@ -2,7 +2,7 @@
   "id": "demonyms:test",
   "item": "minecraft:grass_block",
   "attributes": {
-    "minecraft:generic.movement_speed": 5
+    "minecraft:generic.scale": 5
   },
   "disallowedItems": "minecraft:axes"
 }

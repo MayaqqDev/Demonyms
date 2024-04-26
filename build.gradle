@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.5-SNAPSHOT'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -11,7 +11,7 @@ base {
 }
 
 repositories {
-    maven { url = "https://maven.nucleoid.xyz" }
+    maven { name = "Nucleoid Maven"; description = "Polymer, sGui, Server Translations Api"; url = "https://maven.nucleoid.xyz" }
 }
 
 dependencies {

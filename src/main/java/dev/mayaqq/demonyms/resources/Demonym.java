@@ -1,6 +1,11 @@
 package dev.mayaqq.demonyms.resources;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
@@ -11,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 public record Demonym(Identifier id, ItemConvertible item, @Nullable HashMap<Identifier, Float> attributes, @Nullable TagKey<Item> disallowedItems) {
+
+    public static final Codec<Demonym> CODEC = Codec.PASSTHROUGH.comapFlatMap(Demonym::decodeCodec, Demonym::encodeCodec);
 
     public static Demonym fromJson(JsonObject json) {
         TagKey<Item> disallowedItems = null;
@@ -29,6 +36,10 @@ public record Demonym(Identifier id, ItemConvertible item, @Nullable HashMap<Ide
         );
     }
 
+    public String name() {
+        return id.getPath();
+    }
+
     public static JsonObject toJson(Demonym demonym) {
         JsonObject json = new JsonObject();
         json.addProperty("id", demonym.id().toString());
@@ -42,5 +53,17 @@ public record Demonym(Identifier id, ItemConvertible item, @Nullable HashMap<Ide
             json.addProperty("disallowedItems", demonym.disallowedItems().id().toString());
         }
         return json;
+    }
+
+    private static DataResult<Demonym> decodeCodec(Dynamic<?> dynamic) {
+        Object object = dynamic.convert(JsonOps.INSTANCE).getValue();
+        if (object instanceof JsonElement jsonElement) {
+            return DataResult.success(fromJson(jsonElement.getAsJsonObject()));
+        }
+        return DataResult.error(() -> "Value was not an instance of JsonElement");
+    }
+
+    private static Dynamic<JsonElement> encodeCodec(Demonym demonym) {
+        return new Dynamic<>(JsonOps.INSTANCE, toJson(demonym)).convert(JsonOps.COMPRESSED);
     }
 }
